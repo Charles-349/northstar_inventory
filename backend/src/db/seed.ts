@@ -1,7 +1,7 @@
 import "dotenv/config";
 
-import { db } from "./db";
-import { inventory } from "./db/schema";
+import { db } from ".";
+import { inventory } from "./schema";
 
 async function seed() {
   console.log("🌱 Seeding database...");
