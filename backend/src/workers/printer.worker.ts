@@ -36,12 +36,12 @@ async function startPrinterWorker() {
     );
 
     await axios.post(
-      "http://localhost:5000/api/webhooks/print-complete",
-      {
-        jobId: payload.jobId,
-        attendeeId: payload.attendeeId,
-      }
-    );
+  `${process.env.API_BASE_URL}/api/webhooks/print-complete`,
+  {
+    jobId: payload.jobId,
+    attendeeId: payload.attendeeId,
+  }
+);
 
     console.log(
       `Webhook sent for ${payload.fullName}`

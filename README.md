@@ -8,10 +8,13 @@ Originally, the system used a synchronous badge-printing API where the kiosk wai
 
 During development, the badge-printing vendor deprecated the synchronous API and introduced an asynchronous architecture requiring:
 
-- Message queue publishing
-- Webhook callbacks
-- Pending UI states
-- Duplicate-scan protection
+* Message queue publishing
+
+* Webhook callbacks
+
+* Pending UI states
+
+* Duplicate-scan protection
 
 This project implements the new architecture using React, Express, PostgreSQL, Drizzle ORM, and RabbitMQ.
 
@@ -21,26 +24,33 @@ This project implements the new architecture using React, Express, PostgreSQL, D
 
 ## Frontend
 
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
-- Axios
+* React
+
+* TypeScript
+
+* Vite
+
+* Tailwind CSS
+
+* Axios
 
 ## Backend
 
-- Node.js
-- Express
-- TypeScript
-- Drizzle ORM
+* Node.js
+
+* Express
+
+* TypeScript
+
+* Drizzle ORM
 
 ## Database
 
-- PostgreSQL 16
+* PostgreSQL 16
 
 ## Messaging
 
-- RabbitMQ
+* RabbitMQ
 
 ---
 
@@ -48,23 +58,41 @@ This project implements the new architecture using React, Express, PostgreSQL, D
 
 ```text
 React Frontend
+
        |
+
        v
+
 Express API
+
        |
+
        v
+
 RabbitMQ Queue
+
        |
+
        v
+
 Printer Worker
+
        |
+
        v
+
 Webhook Callback
+
        |
+
        v
+
 PostgreSQL
+
        |
+
        v
+
 Frontend Polling Updates
 ```
 
@@ -76,14 +104,17 @@ Frontend Polling Updates
 
 Staff can:
 
-- Scan attendee QR codes
-- Enter attendee QR codes manually
+* Scan attendee QR codes
+
+* Enter attendee QR codes manually
 
 Example:
 
 ```text
 ATT-001
+
 ATT-002
+
 ATT-003
 ```
 
@@ -114,7 +145,9 @@ No additional badge print request is created.
 Instead of waiting for a printer response:
 
 1. Check-in request received
+
 2. Print job published to RabbitMQ
+
 3. UI displays:
 
 ```text
@@ -122,7 +155,9 @@ PRINT_PENDING
 ```
 
 4. Printer worker processes the job
+
 5. Worker triggers webhook callback
+
 6. Attendee status becomes:
 
 ```text
@@ -135,19 +170,21 @@ CHECKED_IN
 
 ## attendees
 
-| Column | Type |
-|----------|----------|
-| id | serial |
-| qr_code | varchar |
-| full_name | varchar |
-| status | varchar |
+| Column        | Type      |
+| ------------- | --------- |
+| id            | serial    |
+| qr_code       | varchar   |
+| full_name     | varchar   |
+| status        | varchar   |
 | checked_in_at | timestamp |
 
 Status values:
 
 ```text
 NOT_CHECKED_IN
+
 PRINT_PENDING
+
 CHECKED_IN
 ```
 
@@ -157,13 +194,13 @@ CHECKED_IN
 
 Stores badge print requests.
 
-| Column | Type |
-|----------|----------|
-| id | serial |
-| attendee_id | integer |
-| job_id | varchar |
-| status | varchar |
-| created_at | timestamp |
+| Column      | Type      |
+| ----------- | --------- |
+| id          | serial    |
+| attendee_id | integer   |
+| job_id      | varchar   |
+| status      | varchar   |
+| created_at  | timestamp |
 
 ---
 
@@ -171,13 +208,13 @@ Stores badge print requests.
 
 Stores webhook callback history.
 
-| Column | Type |
-|----------|----------|
-| id | serial |
-| event_id | varchar |
+| Column     | Type    |
+| ---------- | ------- |
+| id         | serial  |
+| event_id   | varchar |
 | event_type | varchar |
-| payload | text |
-| processed | boolean |
+| payload    | text    |
+| processed  | boolean |
 
 ---
 
@@ -187,6 +224,7 @@ Stores webhook callback history.
 
 ```bash
 git clone <repository-url>
+
 cd northstar-inventory
 ```
 
@@ -196,6 +234,7 @@ cd northstar-inventory
 
 ```bash
 cd backend
+
 npm install
 ```
 
@@ -223,7 +262,9 @@ npm run dev
 
 ```bash
 cd frontend
+
 npm install
+
 npm run dev
 ```
 
@@ -241,6 +282,7 @@ Start service:
 
 ```bash
 sudo systemctl enable rabbitmq-server
+
 sudo systemctl start rabbitmq-server
 ```
 
@@ -260,6 +302,7 @@ Default credentials:
 
 ```text
 guest
+
 guest
 ```
 
@@ -307,7 +350,9 @@ Available attendees:
 
 ```text
 ATT-001
+
 ATT-002
+
 ATT-003
 ```
 
@@ -335,7 +380,9 @@ Expected:
 
 ```text
 PRINT_PENDING
+
       ↓
+
 CHECKED_IN
 ```
 
@@ -361,15 +408,26 @@ No second print request should be created.
 
 ---
 
+# RabbitMQ Deployment Note
+
+RabbitMQ and the Printer Worker were implemented and tested successfully in the local development environment. The asynchronous workflow, queue publishing, worker processing, webhook callbacks, and attendee status updates were fully verified locally.
+
+The frontend and backend API are deployed separately, while RabbitMQ and the Printer Worker continue to run locally for demonstration purposes. This is because Render Background Workers require a paid plan and were not included in the deployment setup for this project.
+
+The implemented architecture remains unchanged and can be deployed fully by hosting RabbitMQ and the Printer Worker on dedicated infrastructure or a managed RabbitMQ service.
+
+---
+
 # Pivot Summary
 
 The original design relied on a synchronous badge-printing API.
 
 The vendor introduced a breaking change requiring:
 
-- Queue-based print requests
-- Asynchronous processing
-- Webhook callbacks
+* Queue-based print requests
+
+* Asynchronous processing
+
+* Webhook callbacks
 
 The system was successfully redesigned using RabbitMQ and webhooks while preserving duplicate-scan protection and accurate attendee check-in status.
-
