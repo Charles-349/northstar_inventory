@@ -199,14 +199,6 @@ cd backend
 npm install
 ```
 
-Create:
-
-```env
-DATABASE_URL=postgresql://postgres:password@localhost:5432/northstar_inventory
-PORT=5000
-RABBITMQ_URL=amqp://localhost
-```
-
 Push database schema:
 
 ```bash
