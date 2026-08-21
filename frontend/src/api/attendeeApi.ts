@@ -9,9 +9,7 @@ export const checkInAttendee = async (
 ) => {
   const response = await api.post(
     "/check-in",
-    {
-      qrCode,
-    }
+    { qrCode }
   );
 
   return response.data;
