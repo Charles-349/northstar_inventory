@@ -1,15 +1,14 @@
 import axios from "axios";
 
-const API_URL = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_URL,
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 export const checkInAttendee = async (
   qrCode: string
 ) => {
-  const response = await axios.post(
-    `${API_URL}/check-in`,
+  const response = await api.post(
+    "/check-in",
     {
       qrCode,
     }
@@ -21,8 +20,8 @@ export const checkInAttendee = async (
 export const getAttendeeStatus = async (
   qrCode: string
 ) => {
-  const response = await axios.get(
-    `${API_URL}/attendees/${qrCode}`
+  const response = await api.get(
+    `/attendees/${qrCode}`
   );
 
   return response.data;
