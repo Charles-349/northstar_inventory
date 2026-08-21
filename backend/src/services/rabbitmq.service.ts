@@ -23,15 +23,27 @@ class RabbitMQService {
   }
 
   async publish(message: unknown) {
-    await this.connect();
+    try {
+      await this.connect();
 
-    this.channel.sendToQueue(
-      this.queue,
-      Buffer.from(JSON.stringify(message)),
-      {
-        persistent: true,
-      }
-    );
+      this.channel.sendToQueue(
+        this.queue,
+        Buffer.from(JSON.stringify(message)),
+        {
+          persistent: true,
+        }
+      );
+
+      console.log("📨 Message published");
+    } catch (error) {
+      console.error(
+        "❌ RabbitMQ publish failed:",
+        error
+      );
+
+      
+      return;
+    }
   }
 }
 
